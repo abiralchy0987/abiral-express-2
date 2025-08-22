@@ -1,1 +1,8 @@
 * text=auto
+# Handle all text files
+* text=auto
+
+# Force specific extensions to LF
+*.sh text eol=lf
+*.json text eol=lf
+*.js text eol=lf
