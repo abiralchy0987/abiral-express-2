@@ -1,7 +1,11 @@
-const express = require("express");
+const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const bookRoute = require("./routes/book");
+const bookRoutes = require('./routes/book');
+const publisher = require("./routes/publisher");
+const author = require("./routes/author");
+const genre = require("./routes/genre");
+
 
 const app = express();
 
@@ -19,4 +23,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mern')
     })
     .catch(error => console.log(error));
 
-app.use("/books", bookRoute);
+app.use("/books", bookRoutes);
+app.use("/genres", genre);
+app.use("/publishers", publisher);
+app.use("/authors", author);

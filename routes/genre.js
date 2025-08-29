@@ -1,27 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const BookModel = require("../model/book");
+const Genre = require("../model/genre");
 
-// Get all books(Read)
+// Get all genre(Read)
 router.get('/', async (req, res) => {
     try {
-        const books = await BookModel.find({});
+        const genre = await Genre.find({});
 
-        console.log(books + " books");
-        res.send({ "result": books });
+        console.log(genre + " genres");
+        res.send({ "result": genre });
     } catch (err) {
         res.send({"Error": "This is some error"});
     }
-});
-
-// Get book that matches provided id
+})
+// Get genre that matches provided id
 router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const books = await BookModel.findById(id).exec();
+        const genre = await GenreModel.findById(id).exec();
 
-        console.log(books + " books");
-        res.send({ "result": books });
+        console.log(genre + " genre");
+        res.send({ "result": genre });
     } catch (err) {
         res.send({"Error": "This is some error"});
     }
@@ -30,42 +29,35 @@ router.get('/:id', async (req, res) => {
 // (Create) a new book
 router.post("/", async (req, res) => {
     try{
-        const { title, pages, price, published_year, language } = req.body;
+        const { title } = req.body;
 
         const newBook = {
             "title": title,
-            "pages": pages,
-            "price": price,
-            "published_year": published_year,
-            "language": language
+    
         }
-         
-        const Books = new BookModel(newBook);
-        const response = await Books.save();
+
+        const genre = new GenreModel(newBook);
+        const response = await genre.save();
         res.send({"message": `Successfully created! ${response}`})
     } catch(err){
         res.send({"Error": "This is some error"});
     }
 });
 
-// (updated) Update the book with provided id
+// (updated) Update the genre with provided id
 router.put("/:id", async (req, res) => {
     try{
         const id = req.params.id;
     // console.log(id + " id")
-    const { title, pages, price, published_year, language } = req.body;
+    const { title} = req.body;
 
-        const newBook = {
-            "title": title,
-            "pages": pages,
-            "price": price,
-            "published_year": published_year,
-            "language": language
+        const newGenre = {
+            "title": title
         }
 
-        const response = await BookModel.findByIdAndUpdate(
+        const response = await GenreModel.findByIdAndUpdate(
             id,
-            { $set: newBook },
+            { $set: newGenre },
             { new: true, runValidators: true }
         );
 
@@ -77,11 +69,11 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// (Deleted) the book that matches the provided id
+// (Deleted) the genre that matches the provided id
 router.delete("/:id", async (req, res) => {
 try{
      const id = req.params.id;
-    const response = await BookModel.findByIdAndDelete(id);
+    const response = await GenreModel.findByIdAndDelete(id);
     res.send({ "message": `Successfully Deleted! ${response}` })
 }catch(err){
     res.send({"Error":"This is some error"});
