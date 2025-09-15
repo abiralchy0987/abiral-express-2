@@ -11,8 +11,21 @@ const bookSchema = new Schema({
         type: String,
         enum: ["eng", "nep"]
     },
-    cover_image: String
+    cover_image: String,
+    genre: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Genre'
+    },
+    publisher: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Publisher'
+    },
+    author: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Author'
+    }
 });
+
 
 const BookModel = mongoose.model("book", bookSchema);
 

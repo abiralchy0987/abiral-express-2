@@ -51,7 +51,8 @@ router.post("/", auth, upload.single('image'), async (req, res) => {
             "price": price,
             "language": language,
             "published_year": published_year,
-            "cover_image": image
+            "cover_image": image,
+            "author": author
         }
         const Books = new BookModel(newBook);
         const response = await Books.save()

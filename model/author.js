@@ -4,7 +4,7 @@ const authorSchema = new Schema({
     name: String,
     age: Number,
     country: String,
-
+    
     avatar: String,
     gender: {
         type: String,
