@@ -1,17 +1,18 @@
-const express = require('express');
+const express = require("express");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors');
-const bookRoutes = require('./routes/book');
-const genreRoutes = require("./routes/genre");
-const publisherRoutes = require("./routes/publisher");
-const authorRoutes = require("./routes/author");
-
+const cors = require("cors");
+const bookRoute = require("./routes/book");
+const genreRoute = require("./routes/genre");
+const publisherRoute = require("./routes/publisher");
+const authorRoute = require("./routes/author");
 
 
 
 const app = express();
 
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
 app.use(cors());
 app.use(express.static('public'))
 app.use(bodyParser.json());
@@ -27,7 +28,11 @@ mongoose.connect('mongodb://127.0.0.1:27017/mern')
     })
     .catch(error => console.log(error));
 
-app.use("/books", bookRoutes);
-app.use("/genres", genreRoutes);
-app.use("/publishers", publisherRoutes);
-app.use("/authors", authorRoutes);
+app.use("/book", bookRoute);
+app.use("/publisher", publisherRoute);
+app.use("/author", authorRoute);
+app.use("/genre", genreRoute);
+
+
+
+require('dotenv').config();
