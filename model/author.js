@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const authorSchema = new Schema({
+
+const AuthorSchema = new Schema({
     name: String,
     age: Number,
     country: String,
-    
     avatar: String,
     gender: {
         type: String,
-        enum: ['Male', 'Female', 'Other'],
+        enum: ["Male", "Female"]
     },
-    phone: String,
-    email: String,
-    
+    phone: Number,
+    email: String
 });
 
-const AuthorModel = mongoose.model('Author', authorSchema);
+const AuthorModel = mongoose.model("Author", AuthorSchema);
+
 module.exports = AuthorModel;

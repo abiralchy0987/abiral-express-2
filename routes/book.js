@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer  = require('multer')
+const multer  = require('multer');
 const path = require("path");
 const BookModel = require("../model/book");
 const auth = require("../middleware/auth");
@@ -19,9 +19,9 @@ const storage = multer.diskStorage({
 // Get all books(Read)
 router.get('/', auth, async (req, res) => {
     try {
-        const books = await BookModel.find({});
+        const books = await BookModel.find({}).populate('author').populate('publisher');
         console.log(books + " books");
-        res.status(200).send({ "result": books });
+        res.status(200).send(books);
     } catch (err) {
         res.status(500).send({ "Error": "This is some error" });
     }
@@ -31,9 +31,9 @@ router.get('/', auth, async (req, res) => {
 router.get('/:id', auth, async (req, res) => {
     try {
         const id = req.params.id;
-        const books = await BookModel.findById(id).exec();
+        const books = await BookModel.findById(id).populate('author').populate("publisher").exec();
         console.log(books + " books");
-        res.status(200).send({ "result": books });
+        res.status(200).send(books);
     } catch (err) {
         res.status(500).send({ "Error": "This is some error" });
     }
@@ -42,8 +42,8 @@ router.get('/:id', auth, async (req, res) => {
 // (Create) a new book
 router.post("/", auth, upload.single('image'), async (req, res) => {
     try {
-        const { title, pages, price, language, published_year } = req.body;
-        const image = req.file.filename;
+        const { title, pages, price, language, published_year, author, genre, publisher } = req.body;
+        const image = req.file ? req.file.filename : "";
 
         const newBook = {
             "title": title,
@@ -52,7 +52,9 @@ router.post("/", auth, upload.single('image'), async (req, res) => {
             "language": language,
             "published_year": published_year,
             "cover_image": image,
-            "author": author
+            "author": author,
+            "genre": genre,
+            "publisher": publisher
         }
         const Books = new BookModel(newBook);
         const response = await Books.save()
@@ -64,18 +66,26 @@ router.post("/", auth, upload.single('image'), async (req, res) => {
 });
 
 // (updated) Update the book with provided id
-router.put("/:id", auth, async (req, res) => {
+router.put("/:id", auth, upload.single('image'), async (req, res) => {
     try {
         const id = req.params.id;
 
-        const { title, pages, price, language, published_year } = req.body;
-
+        const { title, pages, price, language, published_year, author, genre, publisher } = req.body;
+        const image = req.file ? req.file.filename : "";
+        
         const newBook = {
             "title": title,
             "pages": pages,
             "price": price,
             "language": language,
-            "published_year": published_year
+            "published_year": published_year,
+            "author": author,
+            "genre": genre,
+            "publisher": publisher
+        }
+
+        if(image){
+            newBook["cover_image"] = image;
         }
 
         const response = await BookModel.findByIdAndUpdate(
@@ -86,7 +96,8 @@ router.put("/:id", auth, async (req, res) => {
 
         res.status(200).send({ "message": "Successfully updated!" + response })
     } catch (err) {
-        res.status(500).send({ "Error": "This is some error" });
+        console.log(err + " errror")
+        res.status(500).send({ "Error": err });
     }
 });
 

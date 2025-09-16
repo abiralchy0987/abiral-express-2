@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const genreSchema = new Schema({
-    title: String,
+    title: String
 });
 
-const GenreModel = mongoose.model("genre", genreSchema);
+const GenreModel = mongoose.model("Genre", genreSchema);
 
 module.exports = GenreModel;

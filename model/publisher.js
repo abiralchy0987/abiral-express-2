@@ -8,6 +8,9 @@ const publisherSchema = new Schema({
     isActive: Boolean
 });
 
-const PublisherModel = mongoose.model("publisher", publisherSchema);
+const PublisherModel = mongoose.model("Publisher", publisherSchema);
 
 module.exports = PublisherModel;
+
+// Author
+// Name, age, country, avatar, gender, phone, email

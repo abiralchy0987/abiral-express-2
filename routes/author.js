@@ -1,102 +1,101 @@
 const express = require('express');
-const multer = require('multer')
+const multer = require('multer');
+const path = require('path');
 const router = express.Router();
-const path = require("path");
 const AuthorModel = require("../model/author");
 const auth = require("../middleware/auth");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '../public/uploads'));
+      cb(null, path.join(__dirname, '../public/uploads'));
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname); // Unique file name
+      cb(null, Date.now() + '-' + file.originalname); // Unique file name
     }
-});
+  });
+  
+  const upload = multer({ storage: storage });
 
-const upload = multer({ storage: storage });
-
-// Get all authors (Read)
-router.get('/', async (req, res) => {
+// Get all authors(Read)
+router.get('/', auth, async (req, res) => {
     try {
-
         const authors = await AuthorModel.find({});
         console.log(authors + " authors");
-        res.send({ "result": authors });
+        res.status(200).send(authors);
     } catch (err) {
-        res.send({ "Error": "This is some error" });
+        res.status(500).send({ "Error": "This is some error" });
     }
 });
 
-// Get author by ID
-router.get('/:id', async (req, res) => {
+// Get author that matches provided id
+router.get('/:id', auth, async (req, res) => {
     try {
         const id = req.params.id;
         const author = await AuthorModel.findById(id).exec();
         console.log(author + " author");
-        res.send({ "result": author });
+        res.status(200).send({ "result": author });
     } catch (err) {
-        res.send({ "Error": "This is some error" });
+        res.status(500).send({ "Error": "This is some error" });
     }
 });
-
-// Create a new author
-router.post('/', auth, upload.single('image'), async (req, res) => {
+// (Create) a new Author
+router.post("/", upload.single('image'), auth, async (req, res) => {
     try {
-        const { name, age, country, gender, phone, email } = req.body;
-        const image = req.file.filename;
+        const { name, age, country, gender, phone, email  } = req.body;
+        const image = req.file? req.file.filename : "";
 
         const newAuthor = {
             "name": name,
             "age": age,
             "country": country,
-            "avatar": image,
             "gender": gender,
             "phone": phone,
-            "email": email
+            "email": email,
+            "avatar": image
         }
 
-        const author = new AuthorModel(newAuthor);
-        const response = await author.save();
-        res.send({ "message": `Successfully created! ${response}` });
+        const Author = new AuthorModel(newAuthor);
+        const response = await Author.save()
+        res.status(201).send({ "message": `Successfully created! ${response}` })
     } catch (err) {
-        res.send({ "Error": "This is some error" });
+        console.log(err + " err");
+        res.status(500).send({ "Error": "This is some error" });
     }
 });
 
-// Update an author by ID
-router.put('/:id', async (req, res) => {
+// (updated) Update the book with provided id
+router.put("/:id", auth, async (req, res) => {
     try {
         const id = req.params.id;
-        const { name, age, country, avatar, gender, phone, email } = req.body;
-        const newAuthor =
-        {
+        const { name, address, isActive  } = req.body;
+
+        const newPublisher = {
             "name": name,
-            "age": age,
-            "country": country,
-            "avatar": image,
-            "gender": gender,
-            "phone": phone,
-            "email": email
+            "address": address,
+            "isActive": isActive
         }
+
         const response = await AuthorModel.findByIdAndUpdate(
             id,
-            { $set: newAuthor },
-            { new: true, runValidators: true });
-        res.send({ "message": `Successfully updated! ${response}` });
+            { $set: newPublisher },
+            { new: true, runValidators: true }
+        );
+
+        res.status(200).send({ "message": "Successfully updated!" + response })
     } catch (err) {
-        res.send({ "Error": "This is some error" });
+        res.status(500).send({ "Error": "This is some error" });
     }
 });
 
-// Delete an author by ID
-router.delete('/:id', async (req, res) => {
+// (Deleted) the book that matches the provided id
+router.delete("/:id", auth, async (req, res) => {
     try {
         const id = req.params.id;
         const response = await AuthorModel.findByIdAndDelete(id);
-        res.send({ "message": `Successfully deleted! ${response}` });
+
+        res.status(200).send({ "message": `Successfully Deleted! ${response}` })
     } catch (err) {
-        res.send({ "Error": "This is some error" });
+        res.status(500).send({ "Error": "This is some error" });
     }
 });
 
